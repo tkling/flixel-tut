@@ -4,16 +4,16 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 
 class PlayState extends FlxState {
-	var _player:Player;
+  var _player:Player;
 
-	override public function create():Void {
-		_player = new Player(20, 20);
-		add(_player);
+  override public function create():Void {
+    _player = new Player(20, 20);
+    add(_player);
 
-		super.create();
-	}
+    super.create();
+  }
 
-	override public function update(elapsed:Float):Void	{
-		super.update(elapsed);
-	}
+  override public function update(elapsed:Float):Void {
+    super.update(elapsed);
+  }
 }
