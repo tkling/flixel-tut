@@ -1,16 +1,24 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
+// import flixel.util.FlxColor;
 
 class Player extends FlxSprite {
   public var speed:Float = 200;
+  public var graphicAngle:Float;
 
   public function new(?X:Float=0, ?Y:Float=0) {
     super(X, Y);
-    makeGraphic(16, 16, FlxColor.BLUE);
+    // makeGraphic(16, 16, FlxColor.BLUE);
+    loadGraphic(AssetPaths.player__png, true, 16, 16);
+    setFacingFlip(FlxObject.LEFT, false, false);
+    setFacingFlip(FlxObject.RIGHT, true, false);
+    animation.add("lr", [3, 4, 3, 5], 6, false);
+    animation.add("u", [6, 7, 6, 8], 6, false);
+    animation.add("d", [0, 1, 0, 2], 6, false);
     drag.x = drag.y = 1600;
   }
 
@@ -32,32 +40,49 @@ class Player extends FlxSprite {
       right = left = false;
 
     if (up || down || left || right) {
+      setAngleAndFacing(up, down, left, right);
+
       velocity.set(speed, 0);
-      velocity.rotate(FlxPoint.weak(0, 0), determineAngle(up, down, left, right));
+      velocity.rotate(FlxPoint.weak(0, 0), graphicAngle);
+
+      setAnimation();
     }
   }
 
-  function determineAngle(up, down, left, right):Float {
-    var angle:Float = 0;
-
+  function setAngleAndFacing(up, down, left, right):Void {
     if (up) {
-      angle = -90;
+      graphicAngle = -90;
+      facing = FlxObject.UP;
       if (left)
-        angle -= 45;
+        graphicAngle -= 45;
       else if (right)
-        angle += 45;
+        graphicAngle += 45;
     } else if (down) {
-      angle = 90;
+      graphicAngle = 90;
+      facing = FlxObject.DOWN;
       if (left)
-        angle += 45;
+        graphicAngle += 45;
       else if (right)
-        angle -= 45;
+        graphicAngle -= 45;
     } else if (left) {
-      angle = 180;
+      graphicAngle = 180;
+      facing = FlxObject.LEFT;
     } else if (right) {
-      angle = 0;
+      graphicAngle = 0;
+      facing = FlxObject.RIGHT;
     }
+  }
 
-    return angle;
+  function setAnimation():Void {
+    if ((velocity.x != 0 || velocity.y != 0) && !isTouching(FlxObject.ANY)) {
+      switch(facing) {
+      case FlxObject.RIGHT, FlxObject.LEFT:
+        animation.play("lr");
+      case FlxObject.UP:
+        animation.play("u");
+      case FlxObject.DOWN:
+        animation.play("d");
+      }
+    }
   }
 }
