@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
-// import flixel.util.FlxColor;
 
 class Player extends FlxSprite {
   public var speed:Float = 200;
@@ -12,7 +11,6 @@ class Player extends FlxSprite {
 
   public function new(?X:Float=0, ?Y:Float=0) {
     super(X, Y);
-    // makeGraphic(16, 16, FlxColor.BLUE);
     loadGraphic(AssetPaths.player__png, true, 16, 16);
     setFacingFlip(FlxObject.LEFT, false, false);
     setFacingFlip(FlxObject.RIGHT, true, false);
@@ -20,6 +18,8 @@ class Player extends FlxSprite {
     animation.add("u", [6, 7, 6, 8], 6, false);
     animation.add("d", [0, 1, 0, 2], 6, false);
     drag.x = drag.y = 1600;
+    setSize(8, 14);
+    offset.set(4, 2);
   }
 
   override public function update(elapsed:Float):Void {
