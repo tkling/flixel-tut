@@ -65,5 +65,12 @@
     <coin id="32" x="432" y="192" />
     <coin id="33" x="240" y="192" />
     <coin id="34" x="176" y="576" />
+    <enemy id="35" x="208" y="128" etype="0" />
+    <enemy id="36" x="128" y="256" etype="0" />
+    <enemy id="37" x="480" y="112" etype="0" />
+    <enemy id="38" x="512" y="176" etype="0" />
+    <enemy id="39" x="496" y="240" etype="1" />
+    <enemy id="40" x="560" y="240" etype="0" />
+    <enemy id="41" x="336" y="176" etype="0" />
   </entities>
 </level>
