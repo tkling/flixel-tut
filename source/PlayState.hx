@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxObject;
 import flixel.FlxState;
+import flixel.util.FlxColor;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
@@ -20,6 +21,8 @@ class PlayState extends FlxState {
   var _health:Int = 3;
   var _inCombat:Bool = false;
   var _combatHud:CombatHUD;
+  var _ending:Bool;
+  var _won:Bool;
 
   override public function create():Void {
     _map = new FlxOgmoLoader(AssetPaths.level__oel);
@@ -52,6 +55,11 @@ class PlayState extends FlxState {
 
   override public function update(elapsed:Float):Void {
     super.update(elapsed);
+
+    if (_ending) {
+     return;
+    }
+
     if (!_inCombat) {
       FlxG.collide(_player, _walls);
       FlxG.overlap(_player, _coins, playerTouchCoin);
@@ -60,20 +68,32 @@ class PlayState extends FlxState {
       FlxG.overlap(_player, _enemies, playerTouchEnemy);
     } else {
       if (!_combatHud.visible) {
-          _health = _combatHud.playerHealth;
-          _hud.updateHUD(_health, _money);
-          
+        _health = _combatHud.playerHealth;
+        _hud.updateHUD(_health, _money);
+        if (_combatHud.outcome == DEFEAT) {
+          _ending = true;
+          FlxG.camera.fade(FlxColor.BLACK, .33, false, doneFadeOut);
+        } else {
           if (_combatHud.outcome == VICTORY) {
-              _combatHud.e.kill();
+            _combatHud.e.kill();
+            if (_combatHud.e.etype == 1) {
+              _won = true;
+              _ending = true;
+              FlxG.camera.fade(FlxColor.BLACK, .33, false, doneFadeOut);
+            }
           } else {
-              _combatHud.e.flicker();
+            _combatHud.e.flicker();
           }
-
           _inCombat = false;
           _player.active = true;
           _enemies.active = true;
+        }
       }
     }
+  }
+
+  function doneFadeOut():Void {
+    FlxG.switchState(new GameOverState(_won, _money));
   }
 
   function placeEntities(entityName:String, entityData:Xml):Void {
