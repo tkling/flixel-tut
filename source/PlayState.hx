@@ -7,6 +7,7 @@ import flixel.FlxState;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
+using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState {
   var _player:Player;
@@ -14,6 +15,11 @@ class PlayState extends FlxState {
   var _walls:FlxTilemap;
   var _coins:FlxTypedGroup<Coin>;
   var _enemies:FlxTypedGroup<Enemy>;
+  var _hud:HUD;
+  var _money:Int = 0;
+  var _health:Int = 3;
+  var _inCombat:Bool = false;
+  var _combatHud:CombatHUD;
 
   override public function create():Void {
     _map = new FlxOgmoLoader(AssetPaths.level__oel);
@@ -33,6 +39,12 @@ class PlayState extends FlxState {
     add(_player);
     FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 1);
 
+    _hud = new HUD();
+    add(_hud);
+
+     _combatHud = new CombatHUD();
+    add(_combatHud);
+
     _map.loadEntities(placeEntities, "entities");
 
     super.create();
@@ -40,10 +52,28 @@ class PlayState extends FlxState {
 
   override public function update(elapsed:Float):Void {
     super.update(elapsed);
-    FlxG.collide(_player, _walls);
-    FlxG.overlap(_player, _coins, playerTouchCoin);
-    FlxG.collide(_enemies, _walls);
-    _enemies.forEachAlive(checkEnemyVision);
+    if (!_inCombat) {
+      FlxG.collide(_player, _walls);
+      FlxG.overlap(_player, _coins, playerTouchCoin);
+      FlxG.collide(_enemies, _walls);
+      _enemies.forEachAlive(checkEnemyVision);
+      FlxG.overlap(_player, _enemies, playerTouchEnemy);
+    } else {
+      if (!_combatHud.visible) {
+          _health = _combatHud.playerHealth;
+          _hud.updateHUD(_health, _money);
+          
+          if (_combatHud.outcome == VICTORY) {
+              _combatHud.e.kill();
+          } else {
+              _combatHud.e.flicker();
+          }
+
+          _inCombat = false;
+          _player.active = true;
+          _enemies.active = true;
+      }
+    }
   }
 
   function placeEntities(entityName:String, entityData:Xml):Void {
@@ -62,6 +92,8 @@ class PlayState extends FlxState {
 
   function playerTouchCoin(player:Player, coin:Coin) {
     if (player.alive && player.exists && coin.alive && coin.exists) {
+      _money++;
+      _hud.updateHUD(_health, _money);
       coin.kill();
     }
   }
@@ -73,5 +105,18 @@ class PlayState extends FlxState {
     } else {
       enemy.seesPlayer = false;
     }
+  }
+
+  function playerTouchEnemy(P:Player, E:Enemy):Void {
+    if (P.alive && P.exists && E.alive && E.exists && !E.isFlickering()) {
+      startCombat(E);
+    }
+  }
+
+  function startCombat(E:Enemy):Void {
+    _inCombat = true;
+    _player.active = false;
+    _enemies.active = false;
+    _combatHud.initCombat(_health, E);
   }
 }

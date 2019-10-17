@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVelocity;
 import flixel.FlxSprite;
+using flixel.util.FlxSpriteUtil;
 
 class Enemy extends FlxSprite {
   public var speed:Float = 140;
@@ -83,7 +84,17 @@ class Enemy extends FlxSprite {
   }
 
   override public function update(elapsed:Float):Void {
+    if (this.isFlickering())
+      return;
+
     _brain.update();
     super.update(elapsed);
+  }
+
+  public function changeEnemy(EType:Int):Void {
+    if (etype != EType) {
+      etype = EType;
+      loadGraphic("assets/images/enemy-" + etype + ".png", true, 16, 16);
+    }    
   }
 }
