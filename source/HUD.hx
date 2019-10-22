@@ -21,7 +21,7 @@ class HUD extends FlxTypedGroup<FlxSprite> {
     add(_sprBackground);
 
     _txtHealth = new FlxText(16, 2, 0, "3 / 3", 8);
-    _txtHealth.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);    
+    _txtHealth.setBorderStyle(SHADOW, FlxColor.GRAY, 1, 1);
     add(_txtHealth);
 
     _sprHealth = new FlxSprite(4, _txtHealth.y + (_txtHealth.height/2)  - 4, AssetPaths.health__png);

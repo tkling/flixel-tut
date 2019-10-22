@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVelocity;
 import flixel.FlxSprite;
+import flixel.system.FlxSound;
 using flixel.util.FlxSpriteUtil;
 
 class Enemy extends FlxSprite {
@@ -16,10 +17,13 @@ class Enemy extends FlxSprite {
   var _brain:FSM;
   var _idleTimer:Float;
   var _moveDirection:Float;
+  var _sndStep:FlxSound;
 
   public function new(X:Float=0, Y:Float=0, EType:Int) {
     super(X, Y);
     etype = EType;
+    _sndStep = FlxG.sound.load(AssetPaths.step__wav, .4);
+    _sndStep.proximity(x, y, FlxG.camera.target, FlxG.width *.6);
     loadGraphic("assets/images/enemy-" + etype + ".png", true, 16, 16);
     setFacingFlip(FlxObject.LEFT, false, false);
     setFacingFlip(FlxObject.RIGHT, true, false);
@@ -88,6 +92,12 @@ class Enemy extends FlxSprite {
       return;
 
     _brain.update();
+
+    if ((velocity.x != 0 || velocity.y != 0) && touching == FlxObject.NONE) {
+      _sndStep.setPosition(x + frameWidth / 2, y + height);
+      _sndStep.play();
+    }
+    
     super.update(elapsed);
   }
 

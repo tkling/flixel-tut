@@ -5,6 +5,7 @@ import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxObject;
 import flixel.FlxState;
 import flixel.util.FlxColor;
+import flixel.system.FlxSound;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxTilemap;
@@ -23,6 +24,7 @@ class PlayState extends FlxState {
   var _combatHud:CombatHUD;
   var _ending:Bool;
   var _won:Bool;
+  var _coinSound:FlxSound;
 
   override public function create():Void {
     _map = new FlxOgmoLoader(AssetPaths.level__oel);
@@ -49,6 +51,8 @@ class PlayState extends FlxState {
     add(_combatHud);
 
     _map.loadEntities(placeEntities, "entities");
+
+    _coinSound = FlxG.sound.load(AssetPaths.coin__wav);
 
     super.create();
   }
@@ -114,6 +118,7 @@ class PlayState extends FlxState {
     if (player.alive && player.exists && coin.alive && coin.exists) {
       _money++;
       _hud.updateHUD(_health, _money);
+      _coinSound.play(true);
       coin.kill();
     }
   }

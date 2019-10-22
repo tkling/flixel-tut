@@ -301,8 +301,7 @@ class CombatHUD extends FlxTypedGroup<FlxSprite>
     _pointer.visible = false;	// hide our pointer
     switch (_selected) {	// check which item was selected when the player picked it
       case 0:
-        // if choice 0: FIGHT was picked...
-        
+        // if choice 0: FIGHT was picked...        
         // ...the player attacks the enemy first
         // they have an 85% chance to hit the enemy
         if (FlxG.random.bool(85)) {
